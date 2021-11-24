@@ -17,3 +17,10 @@ Set-PSReadLineOption -ShowToolTips
 Set-PSReadLineOption -PredictionSource History
 ```
 
+## 查询mac生产厂商信息
+```powershell
+New-Alias gmi   Get-MacInfo
+function Get-MacInfo($MacAddress){
+        iwr "https://api.maclookup.app/v2/macs/$MacAddress" | ConvertFrom-Json
+}
+```
