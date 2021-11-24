@@ -1,7 +1,7 @@
 # pwsh_profile
 backup my profile... and share some function.
 
-## Add-UserEnvironmentVariable
+## 添加用户环境变量
 ```powershell
 New-Alias ade   Add-UserEnvironmentVariable
 function Add-UserEnvironmentVariable($NewPath){
