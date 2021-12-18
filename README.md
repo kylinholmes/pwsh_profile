@@ -1,5 +1,6 @@
 # pwsh_profile
 backup my profile... and share some function.
+## 添加至`$profile`文件
 
 ## 添加用户环境变量
 ```powershell
