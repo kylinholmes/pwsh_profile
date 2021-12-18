@@ -13,10 +13,10 @@ New-Alias ade   Add-UserEnvironmentVariable
 New-Alias gmi   Get-MacInfo
 New-Alias gma   Get-MacAddress
 New-Alias hex 	hastyhex.exe
+New-Alias gport Get-TcpPort
 
 $hosts = "C:\Windows\System32\drivers\etc\hosts"
-$ChromeUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11"
-
+$env:FB_DATABASE = "C:\Users\Kylin\AppData\Local\VirtualStore\Program Files\filebrowser\filebrowser.db"
 # Config PWSH
 #New-PSDrive -Name Arch -PSProvider FileSystem -Root "\\wsl$\Arch2\root" > $null
 Set-PSReadLineOption -ShowToolTips
@@ -45,23 +45,59 @@ function Get-IPAddress(){
                 Sort-Object InterfaceIndex
         return $info
 }
+function Get-Gateway(){
+        $info =  Get-NetIPConfiguration | 
+                foreach IPv4DefaultGateway | 
+                Select-Object -Property ifIndex,DestinationPrefix,NextHop,RouteMetric,InterfaceAlias
+        return $info
+}
 
 function Add-UserEnvironmentVariable($NewPath){
         $PreviousPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
         $New = "$PreviousPath;$NewPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$New", "User")
-        return New-Object psobject -Property @{Path = $New -split ";"}
+        echo "Add $NewPath Success"
+        return New-Object psobject -Property @{Path = $NewPath}
 }
 
 function Get-MacInfo($MacAddress){
-        iwr "https://api.maclookup.app/v2/macs/$MacAddress" | ConvertFrom-Json
+        $res = iwr "https://api.maclookup.app/v2/macs/$MacAddress" | ConvertFrom-Json
+        if ($res.found -ne "True"){
+                return "Not Found"
+        }
+        return $res
 }
+
 function Get-MacAddress(){
-        Get-NetNeighbor -AddressFamily IPv4 | 
+        return Get-NetNeighbor -AddressFamily IPv4 | 
         Where-Object {
                 $_.LinkLayerAddress -ne "00-00-00-00-00-00" -and
                 $_.LinkLayerAddress -ne "FF-FF-FF-FF-FF-FF" -and
                 $_.ifIndex -ne "1"
                 } | 
         sort ifIndex
+}
+
+function Get-TcpPort($Port){
+        $Port = Get-NetTCPConnection -LocalPort $Port | Where-Object {$_.OwningProcess -ne 0}
+        $Process = Get-Process -Id $Port.OwningProcess
+        return $Process | Select-Object -Property Id,Name,Path
+}
+
+function Test-Off(){
+	bcdedit /set testsigning off
+}
+
+
+function Get-Users(){
+        return Get-LocalGroup | % {Get-LocalGroupMember $_}
+}
+
+New-Alias chown Set-Owner
+function Set-Owner([string]$Path,[string]$Owner){
+        $ACL = Get-Acl $Path
+        $User = New-Object System.Security.Principal.Ntaccount($Owner)
+        $ACL.SetOwner($User)
+        $ACL | Set-Acl -Path $Path
+        return acl $Path
 }
