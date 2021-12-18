@@ -24,3 +24,20 @@ function Get-MacInfo($MacAddress){
         iwr "https://api.maclookup.app/v2/macs/$MacAddress" | ConvertFrom-Json
 }
 ```
+
+
+## 更改文件所有权
+```powershell
+New-Alias chown Set-Owner
+function Set-Owner([string]$Path,[string]$Owner){
+        $ACL = Get-Acl $Path
+        $User = New-Object System.Security.Principal.Ntaccount($Owner)
+        $ACL.SetOwner($User)
+        $ACL | Set-Acl -Path $Path
+        return acl $Path
+}
+```
+**Useage**
+```powershell
+chown test Kylin
+```
