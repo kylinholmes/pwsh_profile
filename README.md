@@ -12,6 +12,10 @@ function Add-UserEnvironmentVariable($NewPath){
         return New-Object psobject -Property @{Path = $New -split ";"}
 }
 ```
+**Useage**
+```powershell
+ade Test
+```
 ## 设置pwsh代码提示，版本要大于7.15
 ```powershell
 Set-PSReadLineOption -ShowToolTips
