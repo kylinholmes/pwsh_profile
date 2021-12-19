@@ -7,6 +7,7 @@ backup my profile... and share some function.
 New-Alias ade   Add-UserEnvironmentVariable
 function Add-UserEnvironmentVariable($NewPath){
         $PreviousPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+        $NewPath = Resolve-Path $NewPath
         $New = "$PreviousPath;$NewPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$New", "User")
         return New-Object psobject -Property @{Path = $New -split ";"}
