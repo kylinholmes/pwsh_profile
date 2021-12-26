@@ -15,10 +15,9 @@ New-Alias gma   Get-MacAddress
 New-Alias hex 	hastyhex.exe
 New-Alias gport Get-TcpPort
 
-$hosts = "C:\Windows\System32\drivers\etc\hosts"
-$env:FB_DATABASE = "C:\Users\Kylin\AppData\Local\VirtualStore\Program Files\filebrowser\filebrowser.db"
+$Hosts = "C:\Windows\System32\drivers\etc\hosts"
 # Config PWSH
-#New-PSDrive -Name Arch -PSProvider FileSystem -Root "\\wsl$\Arch2\root" > $null
+# New-PSDrive -Name Arch -PSProvider FileSystem -Root "\\wsl$\Arch2\root" > $null
 Set-PSReadLineOption -ShowToolTips
 Set-PSReadLineOption -PredictionSource History
 Set-PoshPrompt -Theme space
@@ -54,7 +53,7 @@ function Get-Gateway(){
 
 function Add-UserEnvironmentVariable($NewPath){
         $PreviousPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
-	$NewPath = Resolve-Path $NewPath
+        $NewPath = Resolve-Path $NewPath
         $New = "$PreviousPath;$NewPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$New", "User")
         echo "Add $NewPath Success"
@@ -85,10 +84,6 @@ function Get-TcpPort($Port){
         return $Process | Select-Object -Property Id,Name,Path
 }
 
-function Test-Off(){
-	bcdedit /set testsigning off
-}
-
 
 function Get-Users(){
         return Get-LocalGroup | % {Get-LocalGroupMember $_}
@@ -101,4 +96,11 @@ function Set-Owner([string]$Path,[string]$Owner){
         $ACL.SetOwner($User)
         $ACL | Set-Acl -Path $Path
         return acl $Path
+}
+
+New-Alias ipi Get-IPinfo
+function Get-IPinfo([string] $IPAddress){
+        $token = Get-Content C:\Users\Kylin\Documents\PowerShell\IPinfotoken
+        $query = "ipinfo.io/" + $IPAddress + "?token=$token"
+        return iwr $query | ConvertFrom-Json | Format-List
 }
