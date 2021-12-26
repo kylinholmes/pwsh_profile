@@ -1,22 +1,12 @@
 # pwsh_profile
 backup my profile... and share some function.
-## 添加至`$profile`文件
+## 添加`profile.ps1`内容至`$profile`文件
 
-## 添加用户环境变量
-```powershell
-New-Alias ade   Add-UserEnvironmentVariable
-function Add-UserEnvironmentVariable($NewPath){
-        $PreviousPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
-        $NewPath = Resolve-Path $NewPath
-        $New = "$PreviousPath;$NewPath"
-        [System.Environment]::SetEnvironmentVariable("Path", "$New", "User")
-        return New-Object psobject -Property @{Path = $New -split ";"}
-}
-```
-**Useage**
+## 添加用户环境变量到`Path`
 ```powershell
 ade Test
 ```
+
 ## 设置pwsh代码提示，版本要大于7.15
 ```powershell
 Set-PSReadLineOption -ShowToolTips
@@ -25,25 +15,16 @@ Set-PSReadLineOption -PredictionSource History
 
 ## 查询mac生产厂商信息
 ```powershell
-New-Alias gmi   Get-MacInfo
-function Get-MacInfo($MacAddress){
-        iwr "https://api.maclookup.app/v2/macs/$MacAddress" | ConvertFrom-Json
-}
+gmi 00-74-9C-96-72-55
 ```
-
 
 ## 更改文件所有权
 ```powershell
-New-Alias chown Set-Owner
-function Set-Owner([string]$Path,[string]$Owner){
-        $ACL = Get-Acl $Path
-        $User = New-Object System.Security.Principal.Ntaccount($Owner)
-        $ACL.SetOwner($User)
-        $ACL | Set-Acl -Path $Path
-        return acl $Path
-}
-```
-**Useage**
-```powershell
 chown test Kylin
+```
+
+## 查询ip信息
+**需要ipinfo的token**
+```powershell
+ipi 172.21.145.202
 ```
