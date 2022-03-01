@@ -4,7 +4,7 @@ backup my profile... and share some function.
 添加`profile.ps1`内容至`$profile`文件
 执行以下命令前，记得确保`$PROFILE`路径真的存在，**注意: `>` 会覆盖原有的文件，如果想加在最后用`>>`**
 ```powershell
-iwr https://raw.githubusercontent.com/kylinholmes/pwsh_profile/main/profile.ps1 > $PROFILE
+(iwr https://raw.githubusercontent.com/kylinholmes/pwsh_profile/main/profile.ps1).Content > $PROFILE
 ```
 
 ## 推荐的函数
