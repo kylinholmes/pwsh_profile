@@ -15,11 +15,17 @@ New-Alias gma   Get-MacAddress
 New-Alias hex 	hastyhex.exe
 New-Alias gport Get-TcpPort
 
+# PSReadLine
+Set-PSReadLineOption -ShowToolTips
+Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+
+
 $Hosts = "C:\Windows\System32\drivers\etc\hosts"
 # Config PWSH
 # New-PSDrive -Name Arch -PSProvider FileSystem -Root "\\wsl$\Arch2\root" > $null
-Set-PSReadLineOption -ShowToolTips
-Set-PSReadLineOption -PredictionSource History
 Set-PoshPrompt -Theme space
 
 
