@@ -15,18 +15,21 @@ New-Alias gma   Get-MacAddress
 New-Alias hex 	hastyhex.exe
 New-Alias gport Get-TcpPort
 
+$Hosts = "C:\Windows\System32\drivers\etc\hosts"
+$env:FB_DATABASE = "C:\Users\Kylin\AppData\Local\VirtualStore\Program Files\filebrowser\filebrowser.db"
+
+Set-PoshPrompt -Theme space
+
+
 # PSReadLine
 Set-PSReadLineOption -ShowToolTips
 Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+Set-PSReadLineOption -PredictionViewStyle ListView
 
-
-$Hosts = "C:\Windows\System32\drivers\etc\hosts"
-# Config PWSH
-# New-PSDrive -Name Arch -PSProvider FileSystem -Root "\\wsl$\Arch2\root" > $null
-Set-PoshPrompt -Theme space
 
 
 $env:Proxy_Status = "Off"
@@ -50,19 +53,18 @@ function Get-IPAddress(){
                 Sort-Object InterfaceIndex
         return $info
 }
-function Get-Gateway(){
-        $info =  Get-NetIPConfiguration | 
-                foreach IPv4DefaultGateway | 
-                Select-Object -Property ifIndex,DestinationPrefix,NextHop,RouteMetric,InterfaceAlias
-        return $info
-}
 
 function Add-UserEnvironmentVariable($NewPath){
         $PreviousPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+        if(!(Test-Path $NewPath)){
+                return "Can not find such path"
+        }
         $NewPath = Resolve-Path $NewPath
-        $New = "$PreviousPath;$NewPath"
+        $Sort = "$PreviousPath;$NewPath" -split ';'| sort
+        $New = [system.String]::Join(";", $Sort)
+        echo $New
         [System.Environment]::SetEnvironmentVariable("Path", "$New", "User")
-        echo "Add $NewPath Success"
+        echo "Add $NewPath to env:Path Success"
         return New-Object psobject -Property @{Path = $NewPath}
 }
 
@@ -88,6 +90,10 @@ function Get-TcpPort($Port){
         $Port = Get-NetTCPConnection -LocalPort $Port | Where-Object {$_.OwningProcess -ne 0}
         $Process = Get-Process -Id $Port.OwningProcess
         return $Process | Select-Object -Property Id,Name,Path
+}
+
+function Test-Off(){
+	bcdedit /set testsigning off
 }
 
 
