@@ -62,7 +62,6 @@ function Add-UserEnvironmentVariable($NewPath){
         $NewPath = Resolve-Path $NewPath
         $Sort = "$PreviousPath;$NewPath" -split ';'| sort
         $New = [system.String]::Join(";", $Sort)
-        echo $New
         [System.Environment]::SetEnvironmentVariable("Path", "$New", "User")
         echo "Add $NewPath to env:Path Success"
         return New-Object psobject -Property @{Path = $NewPath}
