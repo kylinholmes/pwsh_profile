@@ -1,23 +1,5 @@
 # Import module
 Import-Module oh-my-posh
-
-
-# Alias
-New-Alias ip    Get-IPAddress
-New-Alias vim   nvim.exe
-New-Alias exp   explorer.exe
-New-Alias lab   jupyter-lab.exe
-New-Alias swp   Switch-Proxy
-New-Alias fetch Screenfetch
-New-Alias ade   Add-UserEnvironmentVariable
-New-Alias gmi   Get-MacInfo
-New-Alias gma   Get-MacAddress
-New-Alias hex 	hastyhex.exe
-New-Alias gport Get-TcpPort
-
-$Hosts = "C:\Windows\System32\drivers\etc\hosts"
-$env:FB_DATABASE = "C:\Users\Kylin\AppData\Local\VirtualStore\Program Files\filebrowser\filebrowser.db"
-
 Set-PoshPrompt -Theme space
 
 
@@ -32,6 +14,7 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 
 
 
+New-Alias swp   Switch-Proxy
 $env:Proxy_Status = "Off"
 function Switch-Proxy ($Protocol="http",$Port=10809){
         $Proxy = $Protocol+"://127.0.0.1:"+$Port
@@ -46,6 +29,7 @@ function Switch-Proxy ($Protocol="http",$Port=10809){
         return New-Object psobject -Property @{Status = $env:Proxy_Status; Proxy_URL= $env:HTTP_PROXY }
 }
 
+New-Alias ip    Get-IPAddress
 function Get-IPAddress(){
 	$info = Get-NetIPAddress | 
                 Where-Object {($_.AddressFamily -ne "IPv6") -and ($_.AddressState -ne "Tentative")} |
@@ -54,6 +38,7 @@ function Get-IPAddress(){
         return $info
 }
 
+New-Alias ade   Add-UserEnvironmentVariable
 function Add-UserEnvironmentVariable($NewPath){
         $PreviousPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
         if(!(Test-Path $NewPath)){
@@ -67,6 +52,7 @@ function Add-UserEnvironmentVariable($NewPath){
         return New-Object psobject -Property @{Path = $NewPath}
 }
 
+New-Alias gmi   Get-MacInfo
 function Get-MacInfo($MacAddress){
         $res = iwr "https://api.maclookup.app/v2/macs/$MacAddress" | ConvertFrom-Json
         if ($res.found -ne "True"){
@@ -75,6 +61,7 @@ function Get-MacInfo($MacAddress){
         return $res
 }
 
+New-Alias gma   Get-MacAddress
 function Get-MacAddress(){
         return Get-NetNeighbor -AddressFamily IPv4 | 
         Where-Object {
@@ -85,20 +72,7 @@ function Get-MacAddress(){
         sort ifIndex
 }
 
-function Get-TcpPort($Port){
-        $Port = Get-NetTCPConnection -LocalPort $Port | Where-Object {$_.OwningProcess -ne 0}
-        $Process = Get-Process -Id $Port.OwningProcess
-        return $Process | Select-Object -Property Id,Name,Path
-}
 
-function Test-Off(){
-	bcdedit /set testsigning off
-}
-
-
-function Get-Users(){
-        return Get-LocalGroup | % {Get-LocalGroupMember $_}
-}
 
 New-Alias chown Set-Owner
 function Set-Owner([string]$Path,[string]$Owner){
