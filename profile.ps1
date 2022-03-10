@@ -3,6 +3,7 @@ Import-Module oh-my-posh
 Set-PoshPrompt -Theme space
 
 
+
 # PSReadLine
 Set-PSReadLineOption -ShowToolTips
 Set-PSReadLineOption -PredictionSource History
