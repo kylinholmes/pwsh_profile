@@ -17,17 +17,21 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 
 New-Alias swp   Switch-Proxy
 $env:Proxy_Status = "Off"
-function Switch-Proxy ($Protocol="http",$Port=10809){
-        $Proxy = $Protocol+"://127.0.0.1:"+$Port
-        if($env:Proxy_Status -eq "On"){
-                $env:HTTP_PROXY = "";$env:HTTPS_PROXY=""
+function Switch-Proxy ($Server = "127.0.0.1", $Port = 10809, $SocksPort = $Null){
+        if ($env:Proxy_Status -eq "On") {
+                $env:http_proxy   = ""
+                $env:https_proxy  = ""
+                $env:all_proxy    = ""
                 $env:Proxy_Status = "Off"
-        }
-        else{
-                $env:HTTP_PROXY = $Proxy;$env:HTTPS_PROXY = $Proxy
+        } else {
+                $env:http_proxy  = "http://${Server}:$Port"
+                $env:https_proxy = "http://${Server}:$Port"
+                if ($SocksPort -ne $Null) {
+                        $env:all_proxy = "socks://${Server}:$SocksPort"
+                }
                 $env:Proxy_Status = "On"
         }
-        return New-Object psobject -Property @{Status = $env:Proxy_Status; Proxy_URL= $env:HTTP_PROXY }
+        return New-Object psobject -Property @{Status = $env:Proxy_Status; HttpProxy = $env:http_proxy }
 }
 
 New-Alias ip    Get-IPAddress
